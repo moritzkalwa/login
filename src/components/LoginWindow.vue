@@ -1,11 +1,11 @@
 <template>
-    <div class="main-container">
+    <div class="main-container" v-if="init_done && !logged_in">
         <div class="main-window">
             <transition name="fade">
                 <div id="login-window" v-if="!regstate">
                     <form class="login-form">
                         <h1>Login</h1>
-                        <input type="text" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model="email" pattern="/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/" required/><br>
+                        <input type="email" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model="email" /><br>
                         <input type="password" id="password" name="password" placeholder="yourpassword" v-model="password" /><br>
                             <a href="#empty">Lost your password?</a>
                     </form>
@@ -17,10 +17,10 @@
                 <div id="register-window" v-if="regstate">
                     <form class="register-form">
                         <h1>Register</h1>
-                        <input type="text" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model="email" pattern="/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/" required/><br>
-                        <input type="password" id="password" name="password" placeholder="yourpassword" v-model="password" /><br>
-                        <label for="conf-password">Confirm your password:</label><br>
-                        <input type="password" id="conf-password" name="conf-password" placeholder="yourpassword" v-model="password_conf" /><br>
+                        <input type="email" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model.lazy="email" /><br>
+                        <input type="password" id="password" name="password" placeholder="yourpassword" v-model.lazy="password" /><br>
+                        <label for="conf-password" v-bind:class="{ match: pass_match, dontmatch: !pass_match }">Confirm your password:</label><br>
+                        <input type="password" id="conf-password" name="conf-password" placeholder="yourpassword" v-model.lazy="password_conf" /><br>
                     </form>
                     <button v-on:click="reg">Register</button>
                     <button v-on:click="reg_trans">Go back to login</button>
@@ -38,13 +38,17 @@
                 password: '',
                 password_conf: '',
                 emailplaceholder: 'example@gmail.com',
-                regstate: false
+                regstate: false, 
+                init_done: false,
+                logged_in: false
             }
         },
         methods: {
             log: function() {
                 if(this.email != "") {
-                    return false;
+                    this.logged_in = true;
+                    //make body scrollable
+                    (document.getElementsByTagName( 'html' )[0]).removeAttribute( 'class', 'force-login' );
                 } else {
                     this.emailplaceholder = "Please enter an email!";
                 }
@@ -54,12 +58,34 @@
             },
             reg: function() {
 
+            },
+            init: function() {
+                var x = false;
+                if(x) {
+                    //user already logged in
+                    this.logged_in = true;
+                } else {
+                    //make the body unscrollable
+                    (document.getElementsByTagName( 'html' )[0]).setAttribute( 'class', 'force-login' );
+                }
+                this.init_done = true;
+            }
+        },
+        created () {
+            this.init();
+        },
+        computed: {
+            pass_match: function () {
+                return this.password === this. password_conf;
             }
         }
     }
 </script>
 
 <style>
+    .force-login {
+        overflow: hidden;
+    }
     .fade-enter-active {
         transition: opacity 0.5s;
     }
@@ -70,11 +96,14 @@
         opacity: 0;
     }
     .main-container {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+        min-width: 100%;
+        min-height: 100%;
+        background: rgba(0, 0, 255, 0.5);
     }
     .main-window {
         box-shadow: 4px 4px rgba(0, 0, 0, 0.2);
@@ -126,5 +155,11 @@
     }
     .main-window > div > form > a {
         color: grey;
+    }
+    .match {
+        color: green;
+    }
+    .dontmatch {
+        color: red;
     }
 </style>
