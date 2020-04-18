@@ -17,10 +17,10 @@
                 <div id="register-window" v-if="regstate">
                     <form class="register-form">
                         <h1>Register</h1>
-                        <input type="email" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model.lazy="email" /><br>
-                        <input type="password" id="password" name="password" placeholder="yourpassword" v-model.lazy="password" /><br>
+                        <input type="email" id="email" name="email" v-bind:placeholder="emailplaceholder" v-model="email" /><br>
+                        <input type="password" id="password" name="password" placeholder="yourpassword" v-model="password" /><br>
                         <label for="conf-password" v-bind:class="{ match: pass_match, dontmatch: !pass_match }">Confirm your password:</label><br>
-                        <input type="password" id="conf-password" name="conf-password" placeholder="yourpassword" v-model.lazy="password_conf" /><br>
+                        <input type="password" id="conf-password" name="conf-password" placeholder="yourpassword" v-model="password_conf" /><br>
                     </form>
                     <button v-on:click="reg">Register</button>
                     <button v-on:click="reg_trans">Go back to login</button>
